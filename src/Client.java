@@ -86,23 +86,10 @@ public class Client implements Runnable {
 		neighbors.add(neighbor);
 	}
 	
-	/*
-	 * This method takes neighbor details from the user and adds them to the neighbors list
-	 */
-	public void addNeighbor() throws Exception {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Who is your neighbor? ");
-		Neighbor newNeighbor = new Neighbor();
-		newNeighbor.neighborAddress = InetAddress.getByName(sc.next());
-		newNeighbor.neighborPort = Integer.parseInt(sc.next());
-		addNeighborInfo(newNeighbor);
-		
-		// Add this neighbors entry in routing table
-		myRoutingTable.addEntry(newNeighbor.neighborAddress, newNeighbor.neighborAddress.getHostAddress(), 1);
-		
-		//sc.close();
-	}
 
+	/*
+	 * This method checks if it's own routing table needs to be updated
+	 */
 	public void checkForUpdates(RoutingTable routingTable) {
 		//Check if the routing table needs to be updated
 		synchronized(myRoutingTable){
@@ -130,9 +117,13 @@ public class Client implements Runnable {
 	}
 	
 	
-	
+	/*
+	 * This method adds the destinations in the system to the routing table
+	 * If the destination is a neighbor then adds it to the neighbor's list.
+	 */
 	public void addDestinations(String destAddress, boolean isNeighbor, int port) throws Exception {
 		
+		// If it is a neighbor then nexthop would be the neighbor itself and cost would be 1
 		if(isNeighbor) {
 			Neighbor newNeighbor = new Neighbor();
 			newNeighbor.neighborAddress = InetAddress.getByName(destAddress);
@@ -140,6 +131,7 @@ public class Client implements Runnable {
 			addNeighborInfo(newNeighbor);
 			myRoutingTable.addEntry(newNeighbor.neighborAddress, newNeighbor.neighborAddress.getHostAddress(), 1);
 		}
+		// If not neighbor then nexthop is not yet knows and cost would be infinity
 		else {
 			myRoutingTable.addEntry(InetAddress.getByName(destAddress), "-\t", Integer.MAX_VALUE);
 		}
@@ -155,6 +147,8 @@ public class Client implements Runnable {
 		
 		Client thisClient = new Client();
 		
+		// Taking information for all the destinations in the systems
+		// and initializing this router's routing table.
 		for(int i = 0; i < n; ++i) {
 			String destAddress;
 			boolean isNeighbor;
@@ -174,6 +168,9 @@ public class Client implements Runnable {
 		}
 		myRoutingTable.printTable();
 		thisClient.sendRoutingTable();
+		
+		// Closing the scanner object
+		sc.close();
 	}
 
 }
