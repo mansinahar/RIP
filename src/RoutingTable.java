@@ -1,21 +1,29 @@
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class RoutingTable implements Serializable {
 
+	public class ForwardingInfo implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		public ForwardingInfo(String nextHop, int cost) {
+			this.nextHop = nextHop;
+			this.cost = cost;
+		}
+		
+		String nextHop;
+		int cost;
+	}
+	
+	
 	private static final long serialVersionUID = 1L;
-	ArrayList<InetAddress> destSubnet;
-	ArrayList<String> nextHop;
-	ArrayList<Integer> cost;
+	HashMap<InetAddress, ForwardingInfo> destRoutingEntry;
 	
 	
 	public RoutingTable() {
-		
-		destSubnet = new ArrayList<InetAddress>();
-		nextHop = new ArrayList<String>();
-		cost = new ArrayList<Integer>();
+		destRoutingEntry = new HashMap<InetAddress, ForwardingInfo>();
 	}
 	
 	/*
@@ -28,9 +36,7 @@ public class RoutingTable implements Serializable {
 	 * 			Cost to reach the destination
 	 */
 	public void addEntry(InetAddress destSubnet, String nextHop, int cost) {
-		this.destSubnet.add(destSubnet);
-		this.nextHop.add(nextHop);
-		this.cost.add(cost);
+		destRoutingEntry.put(destSubnet, new ForwardingInfo(nextHop,cost));
 	}
 	
 	/*
@@ -38,16 +44,18 @@ public class RoutingTable implements Serializable {
 	 */
 	public void printTable() {
 		// creating iterators for all fields of the table
-		Iterator<InetAddress> destSubnetIterator = destSubnet.iterator();
-		Iterator<String> nextHopIterator = nextHop.iterator();
-		Iterator<Integer> costIterator = cost.iterator();
 		
-		System.out.println("Destination Subnet\t" + "Next Hop\t" + "Cost");
+		Iterator<HashMap.Entry<InetAddress,RoutingTable.ForwardingInfo>> routingEntriesIterator = destRoutingEntry.entrySet().iterator();
+		InetAddress destAddress;
+		while(routingEntriesIterator.hasNext()) {
+			
+			HashMap.Entry<InetAddress,RoutingTable.ForwardingInfo> pair = (HashMap.Entry<InetAddress,RoutingTable.ForwardingInfo>)routingEntriesIterator.next();
+			destAddress = (InetAddress)pair.getKey();
+			ForwardingInfo destForwardingInfo = (ForwardingInfo)pair.getValue();
 		
-		while(destSubnetIterator.hasNext()) {
-			System.out.print(destSubnetIterator.next().getHostAddress() + "\t\t");
-			System.out.print(nextHopIterator.next() + "\t");
-			System.out.print(costIterator.next() + "\t");
+			System.out.print(destAddress + "\t");
+			System.out.print(destForwardingInfo.nextHop + "\t");
+			System.out.print(destForwardingInfo.cost + "\t");
 			System.out.println();
 		}
 	}
