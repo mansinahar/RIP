@@ -19,11 +19,15 @@ public class RoutingTable implements Serializable {
 	
 	
 	private static final long serialVersionUID = 1L;
-	HashMap<InetAddress, ForwardingInfo> destRoutingEntry;
-	
+	HashMap<InetAddress, ForwardingInfo> routingEntries;
 	
 	public RoutingTable() {
-		destRoutingEntry = new HashMap<InetAddress, ForwardingInfo>();
+		try {
+		routingEntries = new HashMap<InetAddress, ForwardingInfo>();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -36,16 +40,18 @@ public class RoutingTable implements Serializable {
 	 * 			Cost to reach the destination
 	 */
 	public void addEntry(InetAddress destSubnet, String nextHop, int cost) {
-		destRoutingEntry.put(destSubnet, new ForwardingInfo(nextHop,cost));
+		routingEntries.put(destSubnet, new ForwardingInfo(nextHop,cost));
 	}
 	
 	/*
 	 * This method prints the routing table entries
 	 */
 	public void printTable() {
-		// creating iterators for all fields of the table
+		// creating iterator for HashMap 
 		
-		Iterator<HashMap.Entry<InetAddress,RoutingTable.ForwardingInfo>> routingEntriesIterator = destRoutingEntry.entrySet().iterator();
+		System.out.println("Routing table");
+		
+		Iterator<HashMap.Entry<InetAddress,RoutingTable.ForwardingInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
 		InetAddress destAddress;
 		while(routingEntriesIterator.hasNext()) {
 			
@@ -60,7 +66,7 @@ public class RoutingTable implements Serializable {
 		}
 	}
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) throws Exception {
 		RoutingTable testTable = new RoutingTable();
 		try {
 		testTable.addEntry(InetAddress.getByName("129.0.0.0"), "129.0.0.0", 20);
@@ -71,6 +77,8 @@ public class RoutingTable implements Serializable {
 		}
 		
 		testTable.printTable();
+		System.out.println(testTable.routingEntries.containsKey(InetAddress.getByName("129.0.0.0")));
+		
 	}
 	
 }

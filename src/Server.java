@@ -4,14 +4,17 @@ import java.net.*;
 public class Server implements Runnable {
 
 	DatagramSocket socket;
-
+	static Logging log;
+	
 	@Override
 	public void run() {
 		
-		System.out.println("Server started");
+		try {
+		log = new Logging("Server" + InetAddress.getLocalHost().getHostName());
+		log.write("Server started");
 
 		//Creating datagram socket
-		try {
+		
 			socket = new DatagramSocket(6499);
 		}
 		catch (Exception e) {
@@ -36,12 +39,12 @@ public class Server implements Runnable {
 
 				// get RoutingTable object
 				RoutingTable routingTable = (RoutingTable)is.readObject();
-				System.out.println("Routing table received from " + packet.getAddress().getHostAddress());
-				routingTable.printTable();
+				log.write("Routing table received from " + packet.getAddress().getHostAddress());
+				//routingTable.printTable();
 
 				// Check if this routing table's object needs to be updated
-				System.out.println("Starting responder to check for updates");
-				Responder respond = new Responder(routingTable);
+				log.write("Starting responder to check for updates");
+				Responder respond = new Responder(routingTable, packet.getAddress(), log);
 				new Thread(respond).start();
 			}
 			catch(Exception e) {
