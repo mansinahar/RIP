@@ -148,7 +148,7 @@ public class Client implements Runnable{
 		// and initializing this router's routing table.
 		for(int i = 0; i < n; ++i) {
 			
-			System.out.println("Enter destination IP address: ");
+			System.out.println("Enter network IP address: ");
 			destAddress = sc.next();
 			System.out.println("Is this destination a neighbor?");
 			isNeighbor = ((sc.next().compareToIgnoreCase("yes")) == 0);

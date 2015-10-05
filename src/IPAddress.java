@@ -6,11 +6,13 @@ public class IPAddress {
 	InetAddress address;
 	int mask;
 	InetAddress networkPrefix;
+	InetAddress maskAddress;
 	
 	public IPAddress(InetAddress address, int mask) throws Exception {
 		this.address = address;
 		this.mask = mask;
 		this.networkPrefix = getNetworkPrefix(address.getHostAddress(), mask);
+		this.maskAddress = convertMask(mask);
 	}
 	
 	public InetAddress convertBinarytoIP(String binaryIP) throws Exception {
@@ -41,6 +43,20 @@ public class IPAddress {
 	}
 	
 	
+	public InetAddress convertMask(int mask) throws Exception {
+		String maskAddr = "";
+        
+        for(int i = 0; i < mask; ++i) {
+        	maskAddr += "1";
+        }
+        
+        for(int i = mask; i < 32; ++i) {
+        	maskAddr += "0";
+        }
+        
+        return convertBinarytoIP(maskAddr);
+	}
+	
 	
 	public InetAddress getNetworkPrefix(String ip, int mask)throws Exception {
 		
@@ -66,6 +82,16 @@ public class IPAddress {
         return convertBinarytoIP(ipAddr);
         
         
+	}
+	
+	public static void main(String args[]) throws Exception {
+		
+		// Testing ipAddress class
+		IPAddress ipAddr = new IPAddress(InetAddress.getByName("129.23.41.15"), 24);
+		System.out.println("Address: " + ipAddr.address.getHostAddress());
+		System.out.println("Mask: " + ipAddr.mask);
+		System.out.println("Mask Address: " + ipAddr.maskAddress.getHostAddress());
+		System.out.println("Network Prefix: " + ipAddr.networkPrefix.getHostAddress());
 	}
 	
 }
