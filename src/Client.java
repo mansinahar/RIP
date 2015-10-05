@@ -12,6 +12,7 @@ public class Client implements Runnable{
 	static Logging log;
 	static RoutingTable myRoutingTable = new RoutingTable();
 	static ArrayList<Neighbor> neighbors = new ArrayList<Neighbor>();
+	static IPAddress ipAddress;
 	
 
 	public Client() {
@@ -137,23 +138,24 @@ public class Client implements Runnable{
 
 		System.out.println("Enter the number of destinations in system: ");
 		int n = Integer.parseInt(sc.next());
-
-
-		//Client thisClient = new Client();
-
+		String destAddress;
+		boolean isNeighbor;
+		String interfaceAddress;
+		
+		int port = 0;
+		
 		// Taking information for all the destinations in the systems
 		// and initializing this router's routing table.
 		for(int i = 0; i < n; ++i) {
-			String destAddress;
-			boolean isNeighbor;
-			int port = 0;
-
+			
 			System.out.println("Enter destination IP address: ");
 			destAddress = sc.next();
 			System.out.println("Is this destination a neighbor?");
 			isNeighbor = ((sc.next().compareToIgnoreCase("yes")) == 0);
 
 			if(isNeighbor) {
+				System.out.println("Enter the interfcae address for this connection");
+				interfaceAddress = sc.next();
 				System.out.println("Enter the port number for the neighbor: ");
 				port = Integer.parseInt(sc.next());
 			}
@@ -169,7 +171,12 @@ public class Client implements Runnable{
 	}
 	
 	
+	
+	
+	
 	public static void main(String args[]) throws Exception {
+		
+		Scanner sc = new Scanner(System.in);
 		
 		try {
 			Server startServer = new Server();
@@ -181,8 +188,13 @@ public class Client implements Runnable{
 		
 		
 		Client thisClient = new Client();
+		System.out.println("Enter the subnet mask for this router: ");
+		ipAddress = new IPAddress(InetAddress.getLocalHost(), Integer.parseInt(sc.next()));
 		thisClient.getNetworkInfo();
+		
+		
 		new Thread(thisClient).start();
+		sc.close();
 			}
 
 }
