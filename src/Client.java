@@ -1,3 +1,6 @@
+/*
+ *@author Mansi Nahar 
+ */
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
@@ -15,6 +18,9 @@ public class Client implements Runnable{
 	static IPAddress ipAddress;
 	
 
+	/*
+	 * Constructor initializing the log and the socket object
+	 */
 	public Client() {
 		try {
 			log = new Logging("Client" + InetAddress.getLocalHost().getHostName());
@@ -173,11 +179,13 @@ public class Client implements Runnable{
 	
 	
 	
-	
+	/*
+	 * Starting the Client and Server threads.
+	 */
 	public static void main(String args[]) throws Exception {
-		
+
 		Scanner sc = new Scanner(System.in);
-		
+
 		try {
 			Server startServer = new Server();
 			new Thread(startServer).start();
@@ -185,16 +193,16 @@ public class Client implements Runnable{
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		Client thisClient = new Client();
 		System.out.println("Enter the subnet mask for this router: ");
 		ipAddress = new IPAddress(InetAddress.getLocalHost(), Integer.parseInt(sc.next()));
 		thisClient.getNetworkInfo();
-		
-		
+
+
 		new Thread(thisClient).start();
 		sc.close();
-			}
+	}
 
 }
